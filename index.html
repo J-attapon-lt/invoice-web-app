@@ -60,11 +60,20 @@
             border-left: 1px solid #000;
             border-right: 1px solid #000;
             border-top: 1px solid #000;
-            border-bottom: 1px solid #000;  
+            border-bottom: 1px solid #000;
         }
 
+        /* ถ้ารายการหลักมีรายละเอียดย่อยต่อท้าย ให้ไม่ขีดเส้นใต้รายการหลัก */
+        .item-table tr.main-row.has-sub td {
+            border-bottom: none;
+        }
+
+        /* รายละเอียดย่อย: ไม่มีเส้นคั่นแนวนอน แต่ยังคงเส้นคอลัมน์ไว้ให้ตารางไม่ขาด */
         .item-table tr.sub-row td {
-            border: none !important;
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-top: none !important;
+            border-bottom: none !important;
             padding-top: 0;
             padding-bottom: 0;
         }
@@ -72,6 +81,11 @@
         .item-table tr.sub-row td.sub-desc {
             padding-left: 10mm;
             color: #333;
+        }
+
+        /* ให้เส้นปิดแถวสุดท้ายกลับมา ถ้าตารางจบด้วยรายละเอียดย่อย */
+        .item-table tbody tr:last-child td {
+            border-bottom: 1px solid #000 !important;
         }
 
         .signature-section {
@@ -307,10 +321,10 @@ function documentApp() {
         },
 
         getMainItemNo(index) {
-        return this.items
-        .slice(0, index + 1)
-        .filter(item => !item.isSub)
-        .length;
+            return this.items
+                .slice(0, index + 1)
+                .filter(item => !item.isSub)
+                .length;
         },
 
         formatDate(dateStr) {
@@ -566,8 +580,7 @@ function documentApp() {
         <label class="block font-semibold mb-1">หมายเหตุ</label>
         <textarea x-model="notes" class="w-full border rounded p-2" rows="4"></textarea>
     </div>
-
-    <hr class="my-5">
+ <hr class="my-5">
 
     <div class="mb-5">
         <label class="flex items-center gap-2 mb-2">
@@ -649,7 +662,7 @@ function documentApp() {
 
         <tbody>
             <template x-for="(item, index) in items" :key="index">
-                <tr :class="item.isSub ? 'sub-row' : 'main-row'">
+                <tr :class="item.isSub ? 'sub-row' : ((items[index + 1] && items[index + 1].isSub) ? 'main-row has-sub' : 'main-row')">
                     <td class="p-1 text-center">
                     <span x-show="!item.isSub" x-text="getMainItemNo(index)"></span>
                 </td>
