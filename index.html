@@ -52,9 +52,26 @@
             font-size: 11.5px;
         }
 
-        .item-table th,
-        .item-table td {
+        .item-table th {
             border: 1px solid #000;
+        }
+
+        .item-table tr.main-row td {
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;  
+        }
+
+        .item-table tr.sub-row td {
+            border: none !important;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .item-table tr.sub-row td.sub-desc {
+            padding-left: 10mm;
+            color: #333;
         }
 
         .signature-section {
@@ -287,6 +304,13 @@ function documentApp() {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
+        },
+
+        getMainItemNo(index) {
+        return this.items
+        .slice(0, index + 1)
+        .filter(item => !item.isSub)
+        .length;
         },
 
         formatDate(dateStr) {
@@ -623,29 +647,35 @@ function documentApp() {
                 </tr>
             </thead>
 
-            <tbody>
-                <template x-for="(item, index) in items" :key="index">
-                    <tr>
-                        <td class="p-1 text-center">
-                            <span x-show="!item.isSub" x-text="index + 1"></span>
-                        </td>
-                        <td class="p-1" :class="item.isSub ? 'pl-5 text-gray-700' : 'font-medium'">
-                            <span x-text="item.desc"></span>
-                        </td>
-                        <td class="p-1 text-center">
-                            <span x-show="!item.isSub" x-text="item.qty"></span>
-                        </td>
-                        <td class="p-1 text-center">
-                            <span x-show="!item.isSub" x-text="item.unit"></span>
-                        </td>
-                        <td class="p-1 text-right">
-                            <span x-show="!item.isSub" x-text="formatNumber(item.price)"></span>
-                        </td>
-                        <td class="p-1 text-right">
-                            <span x-show="!item.isSub" x-text="formatNumber(item.qty * item.price)"></span>
-                        </td>
-                    </tr>
-                </template>
+        <tbody>
+            <template x-for="(item, index) in items" :key="index">
+                <tr :class="item.isSub ? 'sub-row' : 'main-row'">
+                    <td class="p-1 text-center">
+                    <span x-show="!item.isSub" x-text="getMainItemNo(index)"></span>
+                </td>
+
+                <td class="p-1" :class="item.isSub ? 'sub-desc' : 'font-medium'">
+                    <span x-text="item.desc"></span>
+                </td>
+
+                <td class="p-1 text-center">
+                    <span x-show="!item.isSub" x-text="item.qty"></span>
+                </td>
+
+                <td class="p-1 text-center">
+                    <span x-show="!item.isSub" x-text="item.unit"></span>
+                </td>
+
+                <td class="p-1 text-right">
+                    <span x-show="!item.isSub" x-text="formatNumber(item.price)"></span>
+                </td>
+
+                <td class="p-1 text-right">
+                    <span x-show="!item.isSub" x-text="formatNumber(item.qty * item.price)"></span>
+                </td>
+            </tr>
+        </template>
+
             </tbody>
         </table>
 
